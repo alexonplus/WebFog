@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFog", "WebFog.csproj", "{2293BBCC-8CD5-40F0-812C-FF91688EFBD2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2293BBCC-8CD5-40F0-812C-FF91688EFBD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2293BBCC-8CD5-40F0-812C-FF91688EFBD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2293BBCC-8CD5-40F0-812C-FF91688EFBD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2293BBCC-8CD5-40F0-812C-FF91688EFBD2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9585E84F-5B5A-4D1B-A338-56312B9E03FE}
+	EndGlobalSection
+EndGlobal
