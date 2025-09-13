@@ -27,6 +27,8 @@ namespace WebFog
 
             app.UseAuthorization();
 
+            app.UseStaticFiles();
+
 
             app.MapControllers();
 
