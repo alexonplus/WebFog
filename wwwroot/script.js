@@ -6,39 +6,52 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19
 }).addTo(map);
 
-// Create a fog layer
+// Fog layer
 const fogLayer = L.layerGroup().addTo(map);
 const fogOpacity = 0.6;
 
-// Cover the map with initial fog
-function generateFog() {
+// Load previously visited locations from localStorage
+let visited = JSON.parse(localStorage.getItem('visited')) || [];
+
+// Draw fog tiles (rectangles)
+function drawFog() {
+    fogLayer.clearLayers();
     const bounds = map.getBounds();
     const nw = bounds.getNorthWest();
     const se = bounds.getSouthEast();
-
     const rect = L.rectangle([nw, se], { color: 'black', weight: 0, fillOpacity: fogOpacity });
     fogLayer.addLayer(rect);
-}
-generateFog();
 
-// Watch user's location
+    // Remove fog for visited locations
+    visited.forEach(pos => {
+        const circle = L.circle([pos.lat, pos.lng], { radius: pos.radius });
+        fogLayer.eachLayer(layer => {
+            if (layer.getBounds && circle.getBounds().intersects(layer.getBounds())) {
+                fogLayer.removeLayer(layer);
+            }
+        });
+    });
+}
+
+// Initial fog
+drawFog();
+
+// Watch user's position
 if (navigator.geolocation) {
     navigator.geolocation.watchPosition(
         (pos) => {
             const lat = pos.coords.latitude;
             const lng = pos.coords.longitude;
+            const radiusMeters = 50; // radius of visible area
 
-            const radiusMeters = 100;
-            const visibleCircle = L.circle([lat, lng], { radius: radiusMeters });
+            // Save this location to visited if not already
+            visited.push({ lat, lng, radius: radiusMeters });
+            localStorage.setItem('visited', JSON.stringify(visited));
 
             // Remove fog around current position
-            fogLayer.eachLayer(layer => {
-                if (layer.getBounds && visibleCircle.getBounds().intersects(layer.getBounds())) {
-                    fogLayer.removeLayer(layer);
-                }
-            });
+            drawFog();
 
-            // Add or update the user's position circle (always on top)
+            // Add or update user's circle
             if (!window.positionCircle) {
                 window.positionCircle = L.circle([lat, lng], {
                     radius: radiusMeters,
@@ -49,8 +62,9 @@ if (navigator.geolocation) {
             } else {
                 window.positionCircle.setLatLng([lat, lng]);
             }
+            window.positionCircle.bringToFront();
 
-            // Center the map on current position
+            // Center map on user
             map.setView([lat, lng], map.getZoom());
         },
         (err) => { console.error('Geolocation error:', err); },
