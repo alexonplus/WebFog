@@ -6,42 +6,52 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19
 }).addTo(map);
 
-// Create a canvas overlay for the fog
-const canvas = L.canvasLayer().addTo(map);
-const fogRadius = 100; // radius of visible area in meters
-let userPos = null;
+// Create a fog layer
+const fogLayer = L.layerGroup().addTo(map);
+const fogOpacity = 0.6;
 
-// Draw fog function
-function drawFog() {
-    const ctx = canvas._ctx;
-    if (!ctx) return;
+// Cover the whole map with fog initially
+function generateFog() {
+    const bounds = map.getBounds();
+    const nw = bounds.getNorthWest();
+    const se = bounds.getSouthEast();
 
-    ctx.clearRect(0, 0, canvas._canvas.width, canvas._canvas.height);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'; // dark fog
-    ctx.fillRect(0, 0, canvas._canvas.width, canvas._canvas.height);
-
-    if (userPos) {
-        const point = map.latLngToContainerPoint(userPos);
-        const radiusPx = map.latLngToContainerPoint(userPos).distanceTo(
-            map.latLngToContainerPoint(
-                map.containerPointToLatLng([point.x + fogRadius, point.y])
-            )
-        );
-
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.beginPath();
-        ctx.arc(point.x, point.y, radiusPx, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.globalCompositeOperation = 'source-over';
-    }
+    const rect = L.rectangle([nw, se], { color: 'black', weight: 0, fillOpacity: fogOpacity });
+    fogLayer.addLayer(rect);
 }
+generateFog();
 
 // Watch user's location
 if (navigator.geolocation) {
     navigator.geolocation.watchPosition(
         (pos) => {
-            userPos = L.latLng(pos.coords.latitude, pos.coords.longitude);
-            drawFog();
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+
+            // Clear previous fog around current position
+            const radiusMeters = 100;
+            const circle = L.circle([lat, lng], { radius: radiusMeters });
+
+            fogLayer.eachLayer(layer => {
+                if (layer.getBounds && circle.getBounds().intersects(layer.getBounds())) {
+                    fogLayer.removeLayer(layer);
+                }
+            });
+
+            // Add or update position circle
+            if (!window.positionCircle) {
+                window.positionCircle = L.circle([lat, lng], {
+                    radius: radiusMeters,
+                    color: 'blue',
+                    fillColor: '#30f',
+                    fillOpacity: 0.3
+                }).addTo(map);
+            } else {
+                window.positionCircle.setLatLng([lat, lng]);
+            }
+
+            // Center the map on current position
+            map.setView([lat, lng], map.getZoom());
         },
         (err) => { console.error('Geolocation error:', err); },
         { enableHighAccuracy: true }
@@ -49,6 +59,3 @@ if (navigator.geolocation) {
 } else {
     console.warn("Geolocation is not supported by this browser");
 }
-
-// Update fog on map move or zoom
-map.on('move zoom', drawFog);
