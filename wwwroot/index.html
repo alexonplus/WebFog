@@ -1,11 +1,10 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <title>Fog Map</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
-        /* Full-screen map */
         html, body, #map {
             height: 100%;
             margin: 0;
@@ -15,16 +14,9 @@
 <body>
     <div id="map"></div>
 
+    <!-- Подключаем Leaflet -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script>
-        // Minimal map centered on Gothenburg
-        const map = L.map('map').setView([57.7089, 11.9746], 13);
-
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19
-        }).addTo(map);
-    </script>
+    <!-- Подключаем наш скрипт -->
+    <script src="/script.js"></script>
 </body>
 </html>
-
