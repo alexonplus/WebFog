@@ -1,42 +1,15 @@
+var builder = WebApplication.CreateBuilder(args);
 
-namespace WebFog
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+// Add controllers for API
+builder.Services.AddControllers();
 
-            // Add services to the container.
+var app = builder.Build();
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+// Serve static files from wwwroot
+app.UseStaticFiles();
 
-            var app = builder.Build();
+// Map API controllers
+app.MapControllers();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-            app.UseDefaultFiles();
-
-            app.UseStaticFiles();
-
-
-            app.MapControllers();
-
-         
-
-            app.Run();
-        }
-    }
-}
+// Run the application
+app.Run();
