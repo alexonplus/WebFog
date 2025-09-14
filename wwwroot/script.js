@@ -10,7 +10,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const fogLayer = L.layerGroup().addTo(map);
 const fogOpacity = 0.6;
 
-// Cover the whole map with fog initially
+// Cover the map with initial fog
 function generateFog() {
     const bounds = map.getBounds();
     const nw = bounds.getNorthWest();
@@ -28,17 +28,17 @@ if (navigator.geolocation) {
             const lat = pos.coords.latitude;
             const lng = pos.coords.longitude;
 
-            // Clear previous fog around current position
             const radiusMeters = 100;
-            const circle = L.circle([lat, lng], { radius: radiusMeters });
+            const visibleCircle = L.circle([lat, lng], { radius: radiusMeters });
 
+            // Remove fog around current position
             fogLayer.eachLayer(layer => {
-                if (layer.getBounds && circle.getBounds().intersects(layer.getBounds())) {
+                if (layer.getBounds && visibleCircle.getBounds().intersects(layer.getBounds())) {
                     fogLayer.removeLayer(layer);
                 }
             });
 
-            // Add or update position circle
+            // Add or update the user's position circle (always on top)
             if (!window.positionCircle) {
                 window.positionCircle = L.circle([lat, lng], {
                     radius: radiusMeters,
