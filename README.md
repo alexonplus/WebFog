@@ -1,1 +1,1 @@
-![Docker Build](https://github.com/USER/REPO/actions/workflows/docker-publish.yml/badge.svg)
+![Docker Build](https://github.com/alexonplus/WebFog/actions/workflows/docker-publish.yml/badge.svg)
